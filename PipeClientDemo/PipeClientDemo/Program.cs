@@ -14,12 +14,11 @@ namespace PipeClientDemo
         static void Main(string[] args)
         {
             PipeWriter("TheRocks");
-
-
         }
 
         public static void PipeWriter(string pipeName)
         {
+            //"."表示本地的服务，若是远程就需要地址，管道名称要与服务端名称一致。
             var pipeWriter = new NamedPipeClientStream(".", pipeName, PipeDirection.Out);
             using (var writer = new StreamWriter(pipeWriter))
             {
