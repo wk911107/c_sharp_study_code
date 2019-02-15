@@ -11,6 +11,7 @@ namespace WindowPrincipal
 {
     class Program
     {
+        //
         static void Main(string[] args)
         {
             WindowsIdentity identity = ShowIdentityInformation();
