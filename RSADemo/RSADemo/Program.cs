@@ -5,6 +5,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
+/// <summary>
+/// 使用RSA来判断文档是否被修改过。
+/// </summary>
 namespace RSADemo
 {
     class Program
@@ -14,6 +17,8 @@ namespace RSADemo
 
         static void Main(string[] args)
         {
+            var p = new Program();
+            p.Run();
         }
 
         public void Run()
@@ -22,6 +27,10 @@ namespace RSADemo
             byte[] hash;
             byte[] signature;
 
+            RoseTasks(out document, out hash, out signature);
+            //document[3] = 0x34; //此处修改，用以验证是否能检测出文档是否被修改。
+            BobTasks(document, hash, signature);
+            Console.ReadKey();
         }
 
         public void RoseTasks(out byte[] data, out byte[] hash, out byte[] signature)
@@ -32,7 +41,7 @@ namespace RSADemo
             data = Encoding.UTF8.GetBytes("Best greetings from Rose.");
             //获取哈希值
             hash = HashDocument(data);
-
+            signature = AddSignatureToHash(hash, roseKey);
         }
 
         private byte[] HashDocument(byte[] data)
@@ -65,8 +74,17 @@ namespace RSADemo
 
             if (!IsSignatureValid(hash, signature, _roseKey))
             {
-
+                Console.WriteLine("signature not valid");
+                return;
             }
+
+            if (!IsDocumentUnchanged(hash, data))
+            {
+                Console.WriteLine("document was changed");
+                return;
+            }
+            Console.WriteLine("signature valid, document unchanged");
+            Console.WriteLine($"document from Rose:{Encoding.UTF8.GetString(data)}");
         }
 
         private bool IsSignatureValid(byte[] hash, byte[] signature, CngKey key)
